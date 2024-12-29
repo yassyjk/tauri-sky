@@ -1,0 +1,109 @@
+name: 'publish'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+env:
+  PROJECT_NAME: sky
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-22.04, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Set up JDK 17
+        if: matrix.platform == 'ubuntu-22.04'
+        uses: actions/setup-java@v3
+        with: 
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Setup Android SDK
+        if: matrix.platform == 'ubuntu-22.04'
+        uses: android-actions/setup-android@v3
+      - name: Setup Android NDK
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          echo $ANDROID_SDK_ROOT
+          ls $ANDROID_SDK_ROOT/ndk
+          echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/26.3.11579264" >> $GITHUB_ENV
+          echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/26.3.11579264" >> $GITHUB_ENV
+          echo "$ANDROID_SDK_ROOT/ndk/26.3.11579264/toolchains/llvm/prebuilt/linux-x86_64/bin" >> $GITHUB_PATH
+      - run: npm install -g typescript
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update && apt-get install -y locales && sed -i '/ja_JP.UTF-8/s/^# //g' /etc/locale.gen && locale-gen && update-locale LANG=ja_JP.UTF-8 LC_ALL=ja_JP.UTF-8 && echo "LANG=ja_JP.UTF-8" > /etc/default/locale && echo "LC_ALL=ja_JP.UTF-8" >> /etc/default/locale
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev librsvg2-dev patchelf libwebkit2gtk-4.1-dev libxdo-dev build-essential curl wget libssl-dev libayatana-appindicator3-dev sqlite3 libsqlite3-dev libjavascriptcoregtk-4.1-dev libsoup-3.0-dev
+      - name: Setup Xcode(macOS only)
+        if: matrix.platform == 'macos-latest'
+        run: sudo xcode-select --switch /Applications/Xcode_16.1.app
+      - name: install frontend dependencies
+        run: |
+          cd ./${{ env.PROJECT_NAME }}/ && yarn install # change this to npm or pnpm depending on which one you use
+          yarn add react react-dom @types/react @types/react-dom @tauri-apps/api
+      - name: initialize Tauri Android
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+          cd ./${{ env.PROJECT_NAME }}/ && yarn tauri android init && sed -i '/<uses-permission android:name="android.permission.INTERNET" \/>/a \    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>' ./src-tauri/gen/android/app/src/main/AndroidManifest.xml && cat ./src-tauri/gen/android/app/src/main/AndroidManifest.xml
+      - name: build Tauri Android
+        if: matrix.platform == 'ubuntu-22.04'
+        run: cd ./${{ env.PROJECT_NAME }}/ && yarn tauri android build
+      - name: Copy APK to workspace
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          pwd
+          cp /home/runner/work/tauri-${{ env.PROJECT_NAME }}/tauri-${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk .
+          ls -la
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        if: matrix.platform == 'ubuntu-22.04'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: app-v-android # the action automatically replaces \_\_VERSION\_\_ with the app version
+          release_name: 'App v-android'
+          body: 'See the assets to download this version and install.'
+          draft: true
+          prerelease: false
+      - name: Upload APK
+        if: matrix.platform == 'ubuntu-22.04'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./app-universal-release-unsigned.apk
+          asset_name: app-universal-release-unsigned.apk
+          asset_content_type: application/vnd.android.package-archive
+      - name: build frontend
+        run: ls && cd ./${{ env.PROJECT_NAME }}/ && cat package.json && yarn install && yarn build
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
+          releaseName: 'App v__VERSION__'
+          releaseBody: 'See the assets to download this version and install.'
+          releaseDraft: true
+          prerelease: false
