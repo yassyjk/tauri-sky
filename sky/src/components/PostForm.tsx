@@ -7,7 +7,7 @@ import "./PostForm.css";
 interface IPostFormProps {
 }
 
-const PostForm: React.FunctionComponent<IPostFormProps> = (props) => {
+const PostForm: React.FunctionComponent<IPostFormProps> = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [postContent, setPostContent] = useState("");
