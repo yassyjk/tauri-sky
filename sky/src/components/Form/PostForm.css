@@ -1,0 +1,18 @@
+textarea {
+    width: 50%;
+    height: 100px;
+    resize: none;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.post-form {
+    display: fles;
+    flex-direction: column;
+    align-items: center;
+}

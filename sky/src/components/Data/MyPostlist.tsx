@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AtpAgent } from "@atproto/api";
 import "../App.css";
 import "./PostForm.css";
@@ -7,27 +7,47 @@ import "./PostForm.css";
 interface IPostFormProps {
 }
 
-const PostForm: React.FunctionComponent<IPostFormProps> = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+const MyPostlist: React.FunctionComponent<IPostFormProps> = () => {
+    const [username, setUsername] = useState<string | null>("");
+    const [password, setPassword] = useState<string | null>("");
     const [postContent, setPostContent] = useState("");
     const [result, setResult] = useState<string | null>(null);
 
-    const handlePost = async (e: React.FormEvent) => {
+    useEffect(() => {
+        try {
+            getCredentials();
+        } catch {
+            alert("ログイン情報がありません。ログインしてください。");
+        }
+    }, []);
+
+    const getCredentials() => {
+        const username = localStorage.getItem("username");
+        const password = localStorage.getItem("app-password");
+        setUsername(username);
+        setPassword(password);
+    }
+
+    const saveCredentials(username: string, password: string) => {
+        localStorage.setItem("username", username);
+        localStorage.setItem("app-password", password);
+    }
+
+    const fetchMyPost = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const agent = new AtpAgent({ service: "https://bsky.social" });
 
         try {
             // ログイン処理
-            await agent.login({ identifier: username, password });
+            const account = await agent.login({ identifier: username + ".bsky.social", password });
 
             // 投稿処理
             const response = await agent.post({
                 text: postContent
             });
 
-            setResult(`投稿に成功しました。:${response}`);
+            setResult(`投稿に成功しました。:${account}:${JSON.stringify(response)}`);
             setPostContent("");
         } catch (error) {
             setResult(`投稿エラー: ${error}`);
@@ -44,7 +64,7 @@ const PostForm: React.FunctionComponent<IPostFormProps> = () => {
                     id="username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                required />
+                required />.bsky.social
             </div>
             <div>
                 <label htmlFor="password">パスワード</label>
@@ -72,4 +92,4 @@ const PostForm: React.FunctionComponent<IPostFormProps> = () => {
 
 };
 
-export default PostForm;
+export default MyPostlist;
