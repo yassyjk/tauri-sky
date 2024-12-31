@@ -40,7 +40,9 @@ const App: React.FC = () => {
 
               await setStronghold(newStronghold);
               await setClient(strongholdClient);
+          
               getRegister(strongholdClient);
+              setStrongholdResult("");
           } catch (error) {
               console.error("Stronghold error:" + error);
               setStrongholdResult("データ初期化エラー:" + error);

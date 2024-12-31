@@ -26,7 +26,7 @@ const PostForm: React.FunctionComponent<IPostFormProps> = ({ username, password 
                 text: postContent
             });
 
-            setPostResult(`投稿に成功しました。:${account}:${JSON.stringify(response)}`);
+            setPostResult("投稿に成功しました。");
             setPostContent("");
         } catch (error) {
             setPostResult(`投稿エラー: ${error}`);

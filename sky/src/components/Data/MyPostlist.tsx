@@ -42,7 +42,7 @@ const MyPostlist: React.FunctionComponent<IMyPostlistProps> = ({username, passwo
 
     useEffect(() => {
         fetchMyPost();
-    }, []);
+    }, [username]);
 
     // const getCredentials = () => {
     //     const localUsername = localStorage.getItem("username") as string;
