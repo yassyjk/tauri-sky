@@ -22,10 +22,12 @@ const MyPostlist: React.FunctionComponent<IPostFormProps> = () => {
     }, []);
 
     const getCredentials = () => {
-        const username = localStorage.getItem("username");
-        const password = localStorage.getItem("app-password");
-        setUsername(username?);
-        setPassword(password?);
+        const localUsername = localStorage.getItem("username") as string;
+        const localPassword = localStorage.getItem("app-password") as string;
+        if (!username || !password) {
+            setUsername(localUsername);
+            setPassword(localPassword);
+        }
     }
 
     // const saveCredentials = (username: string, password: string) => {
