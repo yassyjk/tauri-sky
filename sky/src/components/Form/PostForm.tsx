@@ -3,15 +3,14 @@ import { AtpAgent } from "@atproto/api";
 import "../../App.css";
 import "./PostForm.css";
 
-
 interface IPostFormProps {
+    username: string;
+    password: string;
 }
 
-const PostForm: React.FunctionComponent<IPostFormProps> = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+const PostForm: React.FunctionComponent<IPostFormProps> = ({ username, password }) => {
     const [postContent, setPostContent] = useState("");
-    const [result, setResult] = useState<string | null>(null);
+    const [postResult, setPostResult] = useState<string | null>(null);
 
     const handlePost = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -27,37 +26,19 @@ const PostForm: React.FunctionComponent<IPostFormProps> = () => {
                 text: postContent
             });
 
-            setResult(`投稿に成功しました。:${account}:${JSON.stringify(response)}`);
+            setPostResult(`投稿に成功しました。:${account}:${JSON.stringify(response)}`);
             setPostContent("");
         } catch (error) {
-            setResult(`投稿エラー: ${error}`);
+            setPostResult(`投稿エラー: ${error}`);
         }
     };
     
     return (
         <div>
             <h2>投稿フォーム</h2>
-            <div className="user-info">
-                <label htmlFor="username">ユーザー名</label>
-                <input
-                    type="text"
-                    id="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required />.bsky.social
-                <br></br>
-
-                <label htmlFor="password">パスワード</label>
-                <input
-                    type="text"
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                required />
-            </div>
             <p>次に投稿内容を入力</p>
-            {result &&
-                <p>{result}</p>
+            {postResult &&
+                <p>{ postResult }</p>
             }
             <form onSubmit={handlePost} className="post-form">
                 <textarea 

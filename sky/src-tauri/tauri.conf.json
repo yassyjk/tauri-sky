@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "tauri-sky",
-  "version": "0.1.0",
-  "identifier": "com.tauri-sky.app",
+  "version": "0.2.0",
+  "identifier": "com.tauriSky.app",
   "build": {
     "beforeDevCommand": "yarn dev --host",
     "devUrl": "http://localhost:1420",
