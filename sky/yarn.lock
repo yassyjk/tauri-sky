@@ -368,6 +368,11 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@phc/format@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@phc/format/-/format-1.0.0.tgz#b5627003b3216dc4362125b13f48a4daa76680e4"
+  integrity sha512-m7X9U6BG2+J+R1lSOdCiITLLrxm+cWlNI3HUFA92oLO77ObGNzaKdh8pMLqdZcshtkKuV84olNNXDfMc4FezBQ==
+
 "@rollup/rollup-android-arm-eabi@4.29.1":
   version "4.29.1"
   resolved "https://registry.yarnpkg.com/@rollup/rollup-android-arm-eabi/-/rollup-android-arm-eabi-4.29.1.tgz#9bd38df6a29afb7f0336d988bc8112af0c8816c0"
@@ -541,6 +546,13 @@
   dependencies:
     "@tauri-apps/api" "^2.0.0"
 
+"@tauri-apps/plugin-stronghold@~2":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-stronghold/-/plugin-stronghold-2.2.0.tgz#191b51d9bf18b33f8ee399aa185f6ae59fe967c9"
+  integrity sha512-N0SxfcNifvlXQ3ZHGxx9ecWNZGXtYJ6PBL0Ac8bGs90I2e2a0+JJcsAnMxQA5XQcIQfpYIXPgf0hNCliz828fw==
+  dependencies:
+    "@tauri-apps/api" "^2.0.0"
+
 "@types/babel__core@^7.20.5":
   version "7.20.5"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.20.5.tgz#3df15f27ba85319caa07ba08d0721889bb39c017"
@@ -607,6 +619,15 @@
     "@babel/plugin-transform-react-jsx-source" "^7.25.9"
     "@types/babel__core" "^7.20.5"
     react-refresh "^0.14.2"
+
+argon2@^0.41.1:
+  version "0.41.1"
+  resolved "https://registry.yarnpkg.com/argon2/-/argon2-0.41.1.tgz#30ce6b013e273bc7e92c558d40e66d35e5e8c63b"
+  integrity sha512-dqCW8kJXke8Ik+McUcMDltrbuAWETPyU6iq+4AhxqKphWi7pChB/Zgd/Tp/o8xRLbg8ksMj46F/vph9wnxpTzQ==
+  dependencies:
+    "@phc/format" "^1.0.0"
+    node-addon-api "^8.1.0"
+    node-gyp-build "^4.8.1"
 
 await-lock@^2.2.2:
   version "2.2.2"
@@ -754,6 +775,16 @@ nanoid@^3.3.7:
   version "3.3.8"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.8.tgz#b1be3030bee36aaff18bacb375e5cce521684baf"
   integrity sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==
+
+node-addon-api@^8.1.0:
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-8.3.0.tgz#ec3763f18befc1cdf66d11e157ce44d5eddc0603"
+  integrity sha512-8VOpLHFrOQlAH+qA0ZzuGRlALRA6/LVh8QJldbrC4DY0hXoMP0l4Acq8TzFC018HztWiRqyCEj2aTWY2UvnJUg==
+
+node-gyp-build@^4.8.1:
+  version "4.8.4"
+  resolved "https://registry.yarnpkg.com/node-gyp-build/-/node-gyp-build-4.8.4.tgz#8a70ee85464ae52327772a90d66c6077a900cfc8"
+  integrity sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==
 
 node-releases@^2.0.19:
   version "2.0.19"

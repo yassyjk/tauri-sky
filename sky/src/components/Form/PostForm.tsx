@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AtpAgent } from "@atproto/api";
-import "../App.css";
+import "../../App.css";
 import "./PostForm.css";
 
 
@@ -20,14 +20,14 @@ const PostForm: React.FunctionComponent<IPostFormProps> = () => {
 
         try {
             // ログイン処理
-            await agent.login({ identifier: username, password });
+            const account = await agent.login({ identifier: username + ".bsky.social", password });
 
             // 投稿処理
             const response = await agent.post({
                 text: postContent
             });
 
-            setResult(`投稿に成功しました。:${response}`);
+            setResult(`投稿に成功しました。:${account}:${JSON.stringify(response)}`);
             setPostContent("");
         } catch (error) {
             setResult(`投稿エラー: ${error}`);
@@ -44,9 +44,9 @@ const PostForm: React.FunctionComponent<IPostFormProps> = () => {
                     id="username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                required />
-            </div>
-            <div>
+                    required />.bsky.social
+                <br></br>
+
                 <label htmlFor="password">パスワード</label>
                 <input
                     type="text"
@@ -59,12 +59,13 @@ const PostForm: React.FunctionComponent<IPostFormProps> = () => {
             {result &&
                 <p>{result}</p>
             }
-            <form onSubmit={handlePost}>
+            <form onSubmit={handlePost} className="post-form">
                 <textarea 
                     value={postContent}
                     onChange={(e) => setPostContent(e.target.value)}
                     required>    
                 </textarea>
+                <br></br>
                 <button type="submit">投稿</button>
             </form>
         </div>
