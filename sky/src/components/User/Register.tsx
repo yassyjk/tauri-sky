@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import "../../App.css";
-import "./Resister.css";
+import "./Register.css";
 import { Client, Stronghold } from '@tauri-apps/plugin-stronghold';
 import { appDataDir } from '@tauri-apps/api/path';
 // import { invoke } from "@tauri-apps/api/core";
