@@ -9,8 +9,6 @@ interface IPostFormProps {
 }
 
 const PostForm: React.FunctionComponent<IPostFormProps> = ({ username, password }) => {
-    // const [username, setUsername] = useState("");
-    // const [password, setPassword] = useState("");
     const [postContent, setPostContent] = useState("");
     const [postResult, setPostResult] = useState<string | null>(null);
 
