@@ -19,10 +19,10 @@ const PostForm: React.FunctionComponent<IPostFormProps> = ({ username, password 
 
         try {
             // ログイン処理
-            const account = await agent.login({ identifier: username + ".bsky.social", password });
+            await agent.login({ identifier: username + ".bsky.social", password });
 
             // 投稿処理
-            const response = await agent.post({
+            await agent.post({
                 text: postContent
             });
 

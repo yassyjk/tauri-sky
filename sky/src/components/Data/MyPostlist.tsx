@@ -22,9 +22,7 @@ const MyPostlist: React.FunctionComponent<IMyPostlistProps> = ({username, passwo
             console.log(username);
             console.log(password);
 
-            const account = await agent.login({ identifier: username + ".bsky.social", password });
-
-            console.log(account);
+            await agent.login({ identifier: username + ".bsky.social", password });
 
             // 投稿一覧取得
             const response = await agent.getAuthorFeed({
