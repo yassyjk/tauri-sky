@@ -8,6 +8,7 @@ import Register from "./components/User/Register";
 import React, { useState, useEffect } from 'react';
 import { Client, Stronghold } from '@tauri-apps/plugin-stronghold';
 import { appDataDir } from '@tauri-apps/api/path';
+import MyPostlist from "./components/Data/MyPostlist";
 // import { invoke } from "@tauri-apps/api/core";
 
 
@@ -20,8 +21,9 @@ const App: React.FC = () => {
       const [client, setClient] = useState<Client | null>(null);
       
 
-      const initStronghold = async () => {
-          try {
+  const initStronghold = async () => {
+        setStrongholdResult("データ取得中..");
+        try {
               const vaultPath = `${await appDataDir()}/vault.hold`;
               const strongholdPassword = "tauri-sky";
 
@@ -41,7 +43,7 @@ const App: React.FC = () => {
               getRegister(strongholdClient);
           } catch (error) {
               console.error("Stronghold error:" + error);
-              setStrongholdResult("Stronghold 初期化エラー:" + error);
+              setStrongholdResult("データ初期化エラー:" + error);
           }
       }
 
@@ -49,8 +51,8 @@ const App: React.FC = () => {
           try {
             const store = client.getStore();
             
-              const encodedUsername = await store?.get("username");
-              const encodedPassword = await store?.get("app-password");
+            const encodedUsername = await store?.get("username");
+            const encodedPassword = await store?.get("app-password");
 
             if (encodedUsername && encodedPassword) {
               setUsername(new TextDecoder().decode(new Uint8Array(encodedUsername)));
@@ -59,7 +61,7 @@ const App: React.FC = () => {
               setResult("既存のユーザーを読み込みました。");
                 
             } else {
-              setResult("ユーザー登録をしてください。")
+              setResult("ユーザー登録をしてください。");
             }
               
           }catch(error){
@@ -86,8 +88,9 @@ const App: React.FC = () => {
         {result && 
           <p>R: {result}</p>
         }
-      <Register initStronghold={initStronghold} getRegister={getRegister} username={username} password={password} setUsername={setUsername} setPassword={setPassword} stronghold={stronghold} client={client} />
+        <Register initStronghold={initStronghold} getRegister={getRegister} username={username} password={password} setUsername={setUsername} setPassword={setPassword} stronghold={stronghold} client={client} />
         <PostForm username={username} password={password} />
+        <MyPostlist username={username} password={password} />
       </main>
     );
 }

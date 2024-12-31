@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AtpAgent } from "@atproto/api";
-import "../App.css";
-import "./PostForm.css";
+import "../../App.css";
 
 
 interface IMyPostlistProps {
