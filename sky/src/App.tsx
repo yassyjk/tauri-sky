@@ -3,7 +3,7 @@
 // import { invoke } from "@tauri-apps/api/core";
 import PostForm from "./components/Form/PostForm";
 import "./App.css";
-import Register from "./components/User/Resister";
+import Register from "./components/User/Register";
 
 function App() {
 
