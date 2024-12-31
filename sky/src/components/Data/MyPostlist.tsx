@@ -33,8 +33,12 @@ const MyPostlist: React.FunctionComponent<IMyPostlistProps> = ({username, passwo
 
                 setPostContent(response);
                 setFetchResult("投稿一覧を取得しました。");                
-            }else{
-                setFetchResult("ユーザー情報がありません。");
+            } else {
+                const response = await agent.getAuthorFeed({
+                    actor: `${username}.bsky.social`,
+                    limit: 10
+                })
+                setFetchResult("ユーザー情報がありません。" + username + ":" + password + ":" + response);
             }
         } catch (error) {
             setFetchResult("fetch error:" + error);
