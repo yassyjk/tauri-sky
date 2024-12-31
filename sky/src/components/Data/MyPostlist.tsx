@@ -8,8 +8,8 @@ interface IPostFormProps {
 }
 
 const MyPostlist: React.FunctionComponent<IPostFormProps> = () => {
-    const [username, setUsername] = useState<string | null>("");
-    const [password, setPassword] = useState<string | null>("");
+    const [username, setUsername] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
     const [postContent, setPostContent] = useState("");
     const [result, setResult] = useState<string | null>(null);
 
@@ -17,42 +17,42 @@ const MyPostlist: React.FunctionComponent<IPostFormProps> = () => {
         try {
             getCredentials();
         } catch {
-            alert("ログイン情報がありません。ログインしてください。");
+            setResult("ログイン情報がありません。ログインしてください。");
         }
     }, []);
 
     const getCredentials = () => {
         const username = localStorage.getItem("username");
         const password = localStorage.getItem("app-password");
-        setUsername(username);
-        setPassword(password);
+        setUsername(username?);
+        setPassword(password?);
     }
 
-    const saveCredentials = (username: string, password: string) => {
-        localStorage.setItem("username", username);
-        localStorage.setItem("app-password", password);
-    }
+    // const saveCredentials = (username: string, password: string) => {
+    //     localStorage.setItem("username", username);
+    //     localStorage.setItem("app-password", password);
+    // }
 
-    const fetchMyPost = async (e: React.FormEvent) => {
-        e.preventDefault();
+    // const fetchMyPost = async (e: React.FormEvent) => {
+    //     e.preventDefault();
 
-        const agent = new AtpAgent({ service: "https://bsky.social" });
+    //     const agent = new AtpAgent({ service: "https://bsky.social" });
 
-        try {
-            // ログイン処理
-            const account = await agent.login({ identifier: username + ".bsky.social", password });
+    //     try {
+    //         // ログイン処理
+    //         const account = await agent.login({ identifier: username + ".bsky.social", password });
 
-            // 投稿処理
-            const response = await agent.post({
-                text: postContent
-            });
+    //         // 投稿処理
+    //         const response = await agent.post({
+    //             text: postContent
+    //         });
 
-            setResult(`投稿に成功しました。:${account}:${JSON.stringify(response)}`);
-            setPostContent("");
-        } catch (error) {
-            setResult(`投稿エラー: ${error}`);
-        }
-    };
+    //         setResult(`投稿に成功しました。:${account}:${JSON.stringify(response)}`);
+    //         setPostContent("");
+    //     } catch (error) {
+    //         setResult(`投稿エラー: ${error}`);
+    //     }
+    // };
     
     return (
         <div>
@@ -79,7 +79,7 @@ const MyPostlist: React.FunctionComponent<IPostFormProps> = () => {
             {result &&
                 <p>{result}</p>
             }
-            <form onSubmit={handlePost}>
+            <form onSubmit={}>
                 <textarea 
                     value={postContent}
                     onChange={(e) => setPostContent(e.target.value)}
