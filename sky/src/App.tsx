@@ -52,10 +52,16 @@ const App: React.FC = () => {
               const encodedUsername = await store?.get("username");
               const encodedPassword = await store?.get("app-password");
 
+            if (encodedUsername && encodedPassword) {
               setUsername(new TextDecoder().decode(new Uint8Array(encodedUsername)));
               setPassword(new TextDecoder().decode(new Uint8Array(encodedPassword)));
               
               setResult("既存のユーザーを読み込みました。");
+                
+            } else {
+              setResult("ユーザー登録をしてください。")
+            }
+              
           }catch(error){
               setResult("ユーザー読み込みエラー" + error);
           }
