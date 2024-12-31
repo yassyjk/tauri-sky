@@ -1,81 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import "../../App.css";
 import "./Register.css";
-import { Client, Stronghold } from '@tauri-apps/plugin-stronghold';
-import { appDataDir } from '@tauri-apps/api/path';
+import { Stronghold } from '@tauri-apps/plugin-stronghold';
+// import { appDataDir } from '@tauri-apps/api/path';
 // import { invoke } from "@tauri-apps/api/core";
-
-// import * as argon2 from "argon2"; 
 
 
 interface IPostFormProps {
+    initStronghold: () => Promise<void>;
+    getRegister: () => Promise<void>;
+    username: string;
+    password: string;
+    setUsername: React.Dispatch<React.SetStateAction<string>>;
+    setPassword: React.Dispatch<React.SetStateAction<string>>;
+    stronghold: Stronghold | null;
+    client: any;
 }
 
-const Register: React.FunctionComponent<IPostFormProps> = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [result, setResult] = useState("");
-    const [stronghold, setStronghold] = useState<Stronghold | null>(null);
-    const [client, setClient] = useState<any>(null);
+const Register: React.FunctionComponent<IPostFormProps> = ({ initStronghold, getRegister, username, password, setUsername, setPassword, stronghold, client }) => {
+    // const [username, setUsername] = useState("");
+    // const [password, setPassword] = useState("");
+    // const [strongholdResult, setStrongholdResult] = useState<string | null>(null);
+    const [registerResult, setRegisterResult] = useState<string | null>(null);
+    // const [result, setResult] = useState<string | null>(null);
+    // const [stronghold, setStronghold] = useState<Stronghold | null>(null);
+    // const [client, setClient] = useState<any>(null);
     
 
-    const initStronghold = async () => {
-        try {
-            console.log("0");
-            const vaultPath = `${await appDataDir()}/vault.hold`;
-            const strongholdPassword = "tauri-sky";
-            console.log("1");
-            console.log(vaultPath);
-            console.log(strongholdPassword);
-            const newStronghold = await Stronghold.load(vaultPath, strongholdPassword);
-            console.log("2");
+    // const initStronghold = async () => {
+    //     try {
+    //         const vaultPath = `${await appDataDir()}/vault.hold`;
+    //         const strongholdPassword = "tauri-sky";
 
-            let client: Client;
+    //         const newStronghold = await Stronghold.load(vaultPath, strongholdPassword);
 
-            const clientName = "main-client";
-            try{
-                client = await newStronghold.loadClient(clientName);
-            }catch{
-                client = await newStronghold.createClient(clientName);
-            }
+    //         let strongholdClient: Client;
 
-            // return {
-            //     stronghold,
-            //     client,
-            // };
-            setStronghold(newStronghold);
-            setClient(client);
-            console.log("3" + client);
-            // await getRegister();
-        } catch (error) {
-            console.log(error);
-            console.log("99");
-            console.error("Stronghold error:" + error);
-            setResult("Stronghold 初期化エラー:" + error);
+    //         const clientName = "main-client-name";
+    //         try{
+    //             strongholdClient = await newStronghold.loadClient(clientName);
+    //         }catch{
+    //             strongholdClient = await newStronghold.createClient(clientName);
+    //         }
 
-            // try {
-            //     const vaultPath = `${await appDataDir()}vault.stronghold`;
-            //     const strongholdPassword = "tauri-sky";
-            //     const newStronghold = await Stronghold.create(vaultPath, strongholdPassword);
-            //     const newClient = await newStronghold.loadClent("main-client");
-            //     setStronghold(newStronghold);
-            //     setClient(newClient);
-            //     setResult("Sgrongholdを新規作成");
-            // } catch (createerror) {
-            //     console.error("Error create Stronghold:" , createerror);
-            //     setResult("Strongholdの作成中にエラー:" + createerror);
-            // }
-        }
-    }
+    //         await setStronghold(newStronghold);
+    //         await setClient(strongholdClient);
+    //         getRegister();
+    //     } catch (error) {
+    //         console.error("Stronghold error:" + error);
+    //         setStrongholdResult("Stronghold 初期化エラー:" + error);
+    //     }
+    // }
 
     const handleRegister = async(e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("5");
-        console.log(stronghold);
-        console.log(client);
 
         if (!stronghold || !client) {
-            setResult("strongholdが初期化されていません。")
+            setRegisterResult("strongholdが初期化されていません。")
             await initStronghold();
             return;
         }
@@ -84,71 +65,56 @@ const Register: React.FunctionComponent<IPostFormProps> = () => {
             // const hashPassword = await invoke<string>("hash_password", { password });
             const encodedUsername = Array.from(new TextEncoder().encode(username));
             const encodedPassword = Array.from(new TextEncoder().encode(password));
+
             const store = client.getStore();
-            console.log("6");
             
             await store.insert("username", encodedUsername);
-            await store.insert("password", encodedPassword);
+            await store.insert("app-password", encodedPassword);
             await stronghold.save();
             getRegister();
-            setResult("ユーザー登録しました。")
+            setRegisterResult("ユーザー登録しました。")
         } catch (error) {
-            setResult(`登録エラー: ${error}`);
+            setRegisterResult(`登録エラー: ${error}`);
         }
     };
 
-    const getRegister = async () => {
-        try {
-            console.log("4");
-            const store = client.getStore();
-            const encodedUsername = await store.get("username");
-            console.log(encodedUsername);
-            const encodedPassword = await store.get("password");
+    // const getRegister = async () => {
+    //     try {
+    //         const store = client.getStore();
+    //         const encodedUsername = await store?.get("username");
+    //         console.log(encodedUsername);
+    //         const encodedPassword = await store?.get("app-password");
 
-            // if (!client) {
-            //     setResult("clientが初期化されていません。");
-            //     return;
-            // }
-
-            // try{
-            //     const store = client.getStore();
-            //     const encodedUsername = await store.get("username");
-            //     const encodedPassword = await store.get("password");
-            //     if(encodedUsername && encodedPassword){
-            //         setUsername(
-            //             new TextDecoder().decode(new Uint8Array(encodedUsername))
-            //         );
-            //         setPassword(
-            //             new TextDecoder().decode(new Uint8Array(encodedPassword))
-            //         );
-            setUsername(new TextDecoder().decode(new Uint8Array(encodedUsername)));
-            setPassword(new TextDecoder().decode(new Uint8Array(encodedPassword)));
+    //         setUsername(new TextDecoder().decode(new Uint8Array(encodedUsername)));
+    //         setPassword(new TextDecoder().decode(new Uint8Array(encodedPassword)));
             
-            setResult("既存のユーザーを読み込みました。");
-        }catch(error){
-            setResult("ユーザー読み込みエラー" + error);
-        }
-    }
+    //         setResult("既存のユーザーを読み込みました。");
+    //     }catch(error){
+    //         setResult("ユーザー読み込みエラー" + error);
+    //     }
+    // }
 
     
     // const { stronghold, client } = initStronghold();
 
     // const store = client.getStore();
-    useEffect(()=>{
-        initStronghold();
-    }, [])
-    
-    useEffect(() => {
-        getRegister();
-    }, [stronghold]);
-    
 
+    useEffect(() => {
+        initStronghold();
+    }, []);
+    
     
     return (
         <form onSubmit={handleRegister}>
-            {result && 
-                <p>{result}</p>
+            {/* {strongholdResult && 
+                <p>{ strongholdResult }</p>
+            } */}
+            {registerResult && 
+                <p>{ registerResult }</p>
             }
+            {/* {result && 
+                <p>{result}</p>
+            } */}
             <div className="user-info">
                 <label htmlFor="username">ユーザー名</label>
                 <input
