@@ -66,8 +66,13 @@ const App: React.FC = () => {
 
       // const store = client.getStore();
 
-    useEffect(() => {
+  useEffect(() => {
+    try {
+      getRegister();
+    } catch {
       initStronghold();
+    }
+      
     }, []);
       
 
