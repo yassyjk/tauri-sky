@@ -37,7 +37,7 @@ const PostForm: React.FunctionComponent<IPostFormProps> = () => {
     return (
         <div>
             <h2>投稿フォーム</h2>
-            {/* <div className="user-info">
+            <div className="user-info">
                 <label htmlFor="username">ユーザー名</label>
                 <input
                     type="text"
@@ -54,7 +54,7 @@ const PostForm: React.FunctionComponent<IPostFormProps> = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 required />
-            </div> */}
+            </div>
             <p>次に投稿内容を入力</p>
             {result &&
                 <p>{result}</p>
