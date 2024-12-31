@@ -17,7 +17,7 @@ const App: React.FC = () => {
       const [strongholdResult, setStrongholdResult] = useState<string | null>(null);
       const [result, setResult] = useState<string | null>(null);
       const [stronghold, setStronghold] = useState<Stronghold | null>(null);
-      const [client, setClient] = useState<any>(null);
+      const [client, setClient] = useState<Client | null>(null);
       
 
       const initStronghold = async () => {
@@ -38,14 +38,14 @@ const App: React.FC = () => {
 
               await setStronghold(newStronghold);
               await setClient(strongholdClient);
-              getRegister();
+              getRegister(strongholdClient);
           } catch (error) {
               console.error("Stronghold error:" + error);
               setStrongholdResult("Stronghold 初期化エラー:" + error);
           }
       }
 
-      const getRegister = async () => {
+      const getRegister = async (client: Client) => {
           try {
             const store = client.getStore();
             
@@ -67,12 +67,7 @@ const App: React.FC = () => {
       // const store = client.getStore();
 
   useEffect(() => {
-    try {
-      getRegister();
-    } catch {
       initStronghold();
-    }
-      
     }, []);
       
 
@@ -80,10 +75,10 @@ const App: React.FC = () => {
       <main className="container">
         <h1>Tauri-Sky</h1>
         {strongholdResult && 
-          <p>{ strongholdResult }</p>
+          <p>S: { strongholdResult }</p>
         }
         {result && 
-          <p>{result}</p>
+          <p>R: {result}</p>
         }
       <Register initStronghold={initStronghold} getRegister={getRegister} username={username} password={password} setUsername={setUsername} setPassword={setPassword} stronghold={stronghold} client={client} />
         <PostForm username={username} password={password} />

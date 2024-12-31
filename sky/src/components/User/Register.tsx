@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import "../../App.css";
 import "./Register.css";
-import { Stronghold } from '@tauri-apps/plugin-stronghold';
+import { Client, Stronghold } from '@tauri-apps/plugin-stronghold';
 // import { appDataDir } from '@tauri-apps/api/path';
 // import { invoke } from "@tauri-apps/api/core";
 
 
 interface IPostFormProps {
     initStronghold: () => Promise<void>;
-    getRegister: () => Promise<void>;
+    getRegister: (client: Client) => Promise<void>;
     username: string;
     password: string;
     setUsername: React.Dispatch<React.SetStateAction<string>>;
