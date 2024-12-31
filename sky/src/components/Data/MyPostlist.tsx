@@ -22,17 +22,20 @@ const MyPostlist: React.FunctionComponent<IMyPostlistProps> = ({username, passwo
             console.log(username);
             console.log(password);
 
-            await agent.login({ identifier: username + ".bsky.social", password });
+            if (username && password) {
+                await agent.login({ identifier: username + ".bsky.social", password });
 
-            // 投稿一覧取得
-            const response = await agent.getAuthorFeed({
-                actor: `${username}.bsky.social`,
-                limit: 10
-            })
+                // 投稿一覧取得
+                const response = await agent.getAuthorFeed({
+                    actor: `${username}.bsky.social`,
+                    limit: 10
+                })
 
-            setPostContent(response);
-            setFetchResult("投稿一覧を取得しました。");
-
+                setPostContent(response);
+                setFetchResult("投稿一覧を取得しました。");                
+            }else{
+                setFetchResult("ユーザー情報がありません。");
+            }
         } catch (error) {
             setFetchResult("fetch error:" + error);
         }
@@ -40,7 +43,7 @@ const MyPostlist: React.FunctionComponent<IMyPostlistProps> = ({username, passwo
 
     useEffect(() => {
         fetchMyPost();
-    }, [username]);
+    }, []);
 
     // const getCredentials = () => {
     //     const localUsername = localStorage.getItem("username") as string;
@@ -81,7 +84,7 @@ const MyPostlist: React.FunctionComponent<IMyPostlistProps> = ({username, passwo
         <div>
             <h2>マイ投稿一覧</h2>
             {fetchResult && <p>{fetchResult}</p>}
-            {postContent?.feed.map((post: any) => 
+            {postContent?.feed?.map((post: any) => 
                 <div>
                     <hr></hr>
                     <p>{post.record.text}</p>
