@@ -51,7 +51,7 @@ const Register: React.FunctionComponent<IPostFormProps> = () => {
             console.log(error);
             console.log("99");
             console.error("Stronghold error:" + error);
-            setResult("Stronghold 初期化エラー:" + error.message);
+            setResult("Stronghold 初期化エラー:" + error);
 
             // try {
             //     const vaultPath = `${await appDataDir()}vault.stronghold`;
