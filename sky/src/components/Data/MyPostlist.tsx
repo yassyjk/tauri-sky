@@ -19,6 +19,9 @@ const MyPostlist: React.FunctionComponent<IMyPostlistProps> = ({username, passwo
     const fetchMyPost = async () => {
         try {
             // ログイン処理
+            console.log(username);
+            console.log(password);
+
             const account = await agent.login({ identifier: username + ".bsky.social", password });
 
             console.log(account);
@@ -80,7 +83,7 @@ const MyPostlist: React.FunctionComponent<IMyPostlistProps> = ({username, passwo
         <div>
             <h2>マイ投稿一覧</h2>
             {fetchResult && <p>{fetchResult}</p>}
-            {postContent.feed.map((post: any) => 
+            {postContent?.feed.map((post: any) => 
                 <div>
                     <hr></hr>
                     <p>{post.record.text}</p>
