@@ -26,7 +26,7 @@ const MyPostlist: React.FunctionComponent<IMyPostlistProps> = ({username, passwo
 
             // 投稿一覧取得
             const response = await agent.getAuthorFeed({
-                actor: `${username} + ".bsky.social"`,
+                actor: `${username}.bsky.social`,
                 limit: 10
             })
 
