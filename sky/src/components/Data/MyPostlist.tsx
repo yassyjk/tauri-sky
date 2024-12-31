@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AtpAgent } from "@atproto/api";
+// import { AtpAgent } from "@atproto/api";
 import "../App.css";
 import "./PostForm.css";
 
@@ -81,7 +81,7 @@ const MyPostlist: React.FunctionComponent<IPostFormProps> = () => {
             {result &&
                 <p>{result}</p>
             }
-            <form onSubmit={}>
+            <form >
                 <textarea 
                     value={postContent}
                     onChange={(e) => setPostContent(e.target.value)}
