@@ -1,34 +1,55 @@
 import React, { useEffect, useState } from 'react';
-// import { AtpAgent } from "@atproto/api";
+import { AtpAgent } from "@atproto/api";
 import "../App.css";
 import "./PostForm.css";
 
 
-interface IPostFormProps {
+interface IMyPostlistProps {
+    username: string;
+    password: string;
 }
 
-const MyPostlist: React.FunctionComponent<IPostFormProps> = () => {
-    const [username, setUsername] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [postContent, setPostContent] = useState("");
-    const [result, setResult] = useState<string | null>(null);
+const MyPostlist: React.FunctionComponent<IMyPostlistProps> = ({username, password}) => {
+    // const [username, setUsername] = useState<string>("");
+    // const [password, setPassword] = useState<string>("");
+    const [postContent, setPostContent] = useState<any>(null);
+    const [fetchResult, setFetchResult] = useState<string | null>(null);
 
-    useEffect(() => {
+    const agent = new AtpAgent({ service: "https://bsky.social" });
+
+    const fetchMyPost = async () => {
         try {
-            getCredentials();
-        } catch {
-            setResult("ログイン情報がありません。ログインしてください。");
-        }
-    }, []);
+            // ログイン処理
+            const account = await agent.login({ identifier: username + ".bsky.social", password });
 
-    const getCredentials = () => {
-        const localUsername = localStorage.getItem("username") as string;
-        const localPassword = localStorage.getItem("app-password") as string;
-        if (!username || !password) {
-            setUsername(localUsername);
-            setPassword(localPassword);
+            console.log(account);
+
+            // 投稿一覧取得
+            const response = await agent.getAuthorFeed({
+                actor: `${username} + ".bsky.social"`,
+                limit: 10
+            })
+
+            setPostContent(response);
+            setFetchResult("投稿一覧を取得しました。");
+
+        } catch (error) {
+            setFetchResult("fetch error:" + error);
         }
     }
+
+    useEffect(() => {
+        fetchMyPost();
+    }, []);
+
+    // const getCredentials = () => {
+    //     const localUsername = localStorage.getItem("username") as string;
+    //     const localPassword = localStorage.getItem("app-password") as string;
+    //     if (!username || !password) {
+    //         setUsername(localUsername);
+    //         setPassword(localPassword);
+    //     }
+    // }
 
     // const saveCredentials = (username: string, password: string) => {
     //     localStorage.setItem("username", username);
@@ -58,37 +79,15 @@ const MyPostlist: React.FunctionComponent<IPostFormProps> = () => {
     
     return (
         <div>
-            <h2>投稿フォーム</h2>
-            <div className="user-info">
-                <label htmlFor="username">ユーザー名</label>
-                <input
-                    type="text"
-                    id="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                required />.bsky.social
-            </div>
-            <div>
-                <label htmlFor="password">パスワード</label>
-                <input
-                    type="text"
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                required />
-            </div>
-            <p>次に投稿内容を入力</p>
-            {result &&
-                <p>{result}</p>
-            }
-            <form >
-                <textarea 
-                    value={postContent}
-                    onChange={(e) => setPostContent(e.target.value)}
-                    required>    
-                </textarea>
-                <button type="submit">投稿</button>
-            </form>
+            <h2>マイ投稿一覧</h2>
+            {fetchResult && <p>{fetchResult}</p>}
+            {postContent.feed.map((post: any) => 
+                <div>
+                    <hr></hr>
+                    <p>{post.record.text}</p>
+                    <p>{post.record.createdAt}</p>
+                </div>
+            )}
         </div>
     );
 
