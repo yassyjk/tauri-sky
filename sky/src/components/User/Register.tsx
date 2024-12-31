@@ -71,7 +71,7 @@ const Register: React.FunctionComponent<IPostFormProps> = ({ initStronghold, get
             await store.insert("username", encodedUsername);
             await store.insert("app-password", encodedPassword);
             await stronghold.save();
-            getRegister();
+            getRegister(client);
             setRegisterResult("ユーザー登録しました。")
         } catch (error) {
             setRegisterResult(`登録エラー: ${error}`);
