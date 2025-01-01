@@ -3,7 +3,7 @@
 // import { invoke } from "@tauri-apps/api/core";
 import PostForm from "./components/Form/PostForm";
 import "./App.css";
-import Register from "./components/User/Register";
+import Register from "./components/User/Register"; 
 
 import React, { useState, useEffect } from 'react';
 import { Client, Stronghold } from '@tauri-apps/plugin-stronghold';
@@ -11,6 +11,7 @@ import { appDataDir } from '@tauri-apps/api/path';
 import MyPostlist from "./components/Data/MyPostlist";
 // import { invoke } from "@tauri-apps/api/core";
 
+import { appWindow } from "@tauri-apps/api/window";
 
 const App: React.FC = () => {
       const [username, setUsername] = useState("");
@@ -40,6 +41,9 @@ const App: React.FC = () => {
 
               await setStronghold(newStronghold);
               await setClient(strongholdClient);
+
+              // 明示的にsave
+              await newStronghold.save();
           
               getRegister(strongholdClient);
               setStrongholdResult("");
@@ -47,7 +51,19 @@ const App: React.FC = () => {
               console.error("Stronghold error:" + error);
               setStrongholdResult("データ初期化エラー:" + error);
           }
+  }
+  
+  appWindow.lister('tauri://close-requested', async () => {
+    if (stronghold) {
+      try {
+        await stronghold.save();
+        console.log("save success")
+      } catch (error) {
+        console.error("save error:" + error);
       }
+    }
+    appWindow.close();
+  });
 
       const getRegister = async (client: Client) => {
           try {
@@ -57,8 +73,10 @@ const App: React.FC = () => {
             const encodedPassword = await store?.get("app-password");
 
             if (encodedUsername && encodedPassword) {
-              setUsername(new TextDecoder().decode(new Uint8Array(encodedUsername)));
-              setPassword(new TextDecoder().decode(new Uint8Array(encodedPassword)));
+              const decodedUsername = new TextDecoder().decode(new Uint8Array(encodedUsername));
+              const decodedPassword = new TextDecoder().decode(new Uint8Array(encodedPassword));
+              setUsername(decodedUsername);
+              setPassword(decodedPassword);
               
               setResult("既存のユーザーを読み込みました。");
                 

@@ -8,10 +8,16 @@ interface IMyPostlistProps {
     password: string;
 }
 
+interface Post{
+    uri: string;
+    text: string;
+    createdAt: string;
+}
+
 const MyPostlist: React.FunctionComponent<IMyPostlistProps> = ({username, password}) => {
     // const [username, setUsername] = useState<string>("");
     // const [password, setPassword] = useState<string>("");
-    const [postContent, setPostContent] = useState<any>(null);
+    const [postContent, setPostContent] = useState<Post[]>([]);
     const [fetchResult, setFetchResult] = useState<string | null>(null);
 
     const agent = new AtpAgent({ service: "https://bsky.social" });
@@ -28,11 +34,19 @@ const MyPostlist: React.FunctionComponent<IMyPostlistProps> = ({username, passwo
                 // 投稿一覧取得
                 const response = await agent.getAuthorFeed({
                     actor: `${username}.bsky.social`,
-                    limit: 10
+                    limit: 10,
                 })
 
-                setPostContent(response);
-                setFetchResult("投稿一覧を取得しました。");                
+                if (response.success) {
+                    const data: Post[] = response.data.feed.map((item) => ({
+                        uri: item.post.uri,
+                        text: (item.post.record as { text: string }).text,
+                        createdAt: (item.post.record as { createdAt: string }).createdAt,
+                    }))
+                    setPostContent(data);
+                    setFetchResult("投稿一覧を取得しました。");  
+                }
+              
             } else {
                 const response = await agent.getAuthorFeed({
                     actor: `${username}.bsky.social`,
@@ -47,7 +61,7 @@ const MyPostlist: React.FunctionComponent<IMyPostlistProps> = ({username, passwo
 
     useEffect(() => {
         fetchMyPost();
-    }, []);
+    }, [username, password]);
 
     // const getCredentials = () => {
     //     const localUsername = localStorage.getItem("username") as string;
@@ -88,13 +102,20 @@ const MyPostlist: React.FunctionComponent<IMyPostlistProps> = ({username, passwo
         <div>
             <h2>マイ投稿一覧</h2>
             {fetchResult && <p>{fetchResult}</p>}
-            {postContent?.feed?.map((post: any) => 
-                <div>
-                    <hr></hr>
-                    <p>{post.record.text}</p>
-                    <p>{post.record.createdAt}</p>
-                </div>
-            )}
+            {postContent.length === 0 ? (
+                <p>投稿無し</p>
+            ) : (<ul>
+                    {
+                        postContent.map((post) => (
+                            <li key={post.uri}>
+                                <p>{post.text}</p>
+                                <p>{new Date(post.createdAt).toLocaleString()}</p>
+                            </li>
+                        ))
+                    }
+            </ul>
+            )   
+            }
         </div>
     );
 
