@@ -57,7 +57,6 @@ const App: React.FC = () => {
   
   const setupCloseListener = async () => {
     const unlisten = await getCurrentWindow().onCloseRequested(async (event) => {
-      event.preventDefault();
       if (stronghold) {
         try {
           await stronghold.save();
