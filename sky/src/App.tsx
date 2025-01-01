@@ -11,7 +11,7 @@ import { appDataDir } from '@tauri-apps/api/path';
 import MyPostlist from "./components/Data/MyPostlist";
 // import { invoke } from "@tauri-apps/api/core";
 
-import { appWindow } from "@tauri-apps/api/window";
+// import { Window } from "@tauri-apps/api/window";
 
 const App: React.FC = () => {
       const [username, setUsername] = useState("");
@@ -53,17 +53,17 @@ const App: React.FC = () => {
           }
   }
   
-  appWindow.lister('tauri://close-requested', async () => {
-    if (stronghold) {
-      try {
-        await stronghold.save();
-        console.log("save success")
-      } catch (error) {
-        console.error("save error:" + error);
-      }
-    }
-    appWindow.close();
-  });
+  // Window.listen('tauri://close-requested', async () => {
+  //   if (stronghold) {
+  //     try {
+  //       await stronghold.save();
+  //       console.log("save success")
+  //     } catch (error) {
+  //       console.error("save error:" + error);
+  //     }
+  //   }
+  //   Window.close();
+  // });
 
       const getRegister = async (client: Client) => {
           try {
