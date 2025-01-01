@@ -62,7 +62,9 @@ const App: React.FC = () => {
           await stronghold.save();
           console.log("save success")
         } catch (error) {
-          console.error("save error:" + error);
+          alert("save error:" + error);
+          event.preventDefault();
+          return;
         }
       }
 
