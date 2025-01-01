@@ -34,6 +34,7 @@
             java-version: '17'
             distribution: 'temurin'
         - name: Generate version date
+          if: matrix.platform == 'ubuntu-22.04'
           id: version_date
           run: echo "VERSION_DATE=$(date + '%Y.%m.%d')" >> GITHUB_OUTPUT
         - name: Setup Android SDK
