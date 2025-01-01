@@ -3,12 +3,16 @@
 // import { invoke } from "@tauri-apps/api/core";
 import PostForm from "./components/Form/PostForm";
 import "./App.css";
-import Register from "./components/User/Register";
+import Register from "./components/User/Register"; 
 
 import React, { useState, useEffect } from 'react';
 import { Client, Stronghold } from '@tauri-apps/plugin-stronghold';
 import { appDataDir } from '@tauri-apps/api/path';
+import MyPostlist from "./components/Data/MyPostlist";
 // import { invoke } from "@tauri-apps/api/core";
+
+import { getCurrentWindow } from "@tauri-apps/api/window";
+// import { confirm } from "@tauri-apps/plugin-dialog";
 
 
 const App: React.FC = () => {
@@ -20,8 +24,9 @@ const App: React.FC = () => {
       const [client, setClient] = useState<Client | null>(null);
       
 
-      const initStronghold = async () => {
-          try {
+  const initStronghold = async () => {
+        setStrongholdResult("データ取得中..");
+        try {
               const vaultPath = `${await appDataDir()}/vault.hold`;
               const strongholdPassword = "tauri-sky";
 
@@ -38,34 +43,70 @@ const App: React.FC = () => {
 
               await setStronghold(newStronghold);
               await setClient(strongholdClient);
+
+              // 明示的にsave
+              await newStronghold.save();
+          
               getRegister(strongholdClient);
+              setStrongholdResult("");
           } catch (error) {
               console.error("Stronghold error:" + error);
-              setStrongholdResult("Stronghold 初期化エラー:" + error);
+              setStrongholdResult("データ初期化エラー:" + error);
           }
+  }
+  
+  const setupCloseListener = async () => {
+    const unlisten = await getCurrentWindow().onCloseRequested(async (event) => {
+      if (stronghold) {
+        try {
+          await stronghold.save();
+          console.log("save success")
+        } catch (error) {
+          alert("save error:" + error);
+          event.preventDefault();
+          return;
+        }
       }
 
-      const getRegister = async (client: Client) => {
-          try {
-            const store = client.getStore();
+      getCurrentWindow().close;
+
+      // const confirmed = await confirm("終了しますか？");
+      // if (!confirmed) {
+      //   event.preventDefault();
+      //   return;
+      // }
+    });
+    
+    return () => {
+        unlisten();
+    };
+    
+  };
+  
+
+  const getRegister = async (client: Client) => {
+      try {
+        const store = client.getStore();
+        
+        const encodedUsername = await store?.get("username");
+        const encodedPassword = await store?.get("app-password");
+
+        if (encodedUsername && encodedPassword) {
+          const decodedUsername = new TextDecoder().decode(new Uint8Array(encodedUsername));
+          const decodedPassword = new TextDecoder().decode(new Uint8Array(encodedPassword));
+          setUsername(decodedUsername);
+          setPassword(decodedPassword);
+          
+          setResult("既存のユーザーを読み込みました。");
             
-              const encodedUsername = await store?.get("username");
-              const encodedPassword = await store?.get("app-password");
-
-            if (encodedUsername && encodedPassword) {
-              setUsername(new TextDecoder().decode(new Uint8Array(encodedUsername)));
-              setPassword(new TextDecoder().decode(new Uint8Array(encodedPassword)));
-              
-              setResult("既存のユーザーを読み込みました。");
-                
-            } else {
-              setResult("ユーザー登録をしてください。")
-            }
-              
-          }catch(error){
-              setResult("ユーザー読み込みエラー" + error);
-          }
+        } else {
+          setResult("ユーザー登録をしてください。");
+        }
+          
+      }catch(error){
+          setResult("ユーザー読み込みエラー" + error);
       }
+  }
 
       
       // const { stronghold, client } = initStronghold();
@@ -73,8 +114,12 @@ const App: React.FC = () => {
       // const store = client.getStore();
 
   useEffect(() => {
-      initStronghold();
-    }, []);
+    const setup = async () => {
+      await setupCloseListener();
+      await initStronghold();
+    };
+    setup();
+  }, []);
       
 
     return (
@@ -86,8 +131,9 @@ const App: React.FC = () => {
         {result && 
           <p>R: {result}</p>
         }
-      <Register initStronghold={initStronghold} getRegister={getRegister} username={username} password={password} setUsername={setUsername} setPassword={setPassword} stronghold={stronghold} client={client} />
+        <Register initStronghold={initStronghold} getRegister={getRegister} username={username} password={password} setUsername={setUsername} setPassword={setPassword} stronghold={stronghold} client={client} />
         <PostForm username={username} password={password} />
+        <MyPostlist username={username} password={password} />
       </main>
     );
 }
