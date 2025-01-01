@@ -33,7 +33,7 @@
           with: 
             java-version: '17'
             distribution: 'temurin'
-        - name; Generate version date
+        - name: Generate version date
           id: version_date
           run: echo "VERSION_DATE=$(date + '%Y.%m.%d')" >> GITHUB_OUTPUT
         - name: Setup Android SDK
