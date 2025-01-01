@@ -56,7 +56,8 @@ const App: React.FC = () => {
   }
   
   const setupCloseListener = async () => {
-    const unlisten = await getCurrentWindow().onCloseRequested(async () => {
+    const unlisten = await getCurrentWindow().onCloseRequested(async (event) => {
+      event.preventDefault();
       if (stronghold) {
         try {
           await stronghold.save();
@@ -65,6 +66,8 @@ const App: React.FC = () => {
           console.error("save error:" + error);
         }
       }
+
+      getCurrentWindow().close;
 
       // const confirmed = await confirm("終了しますか？");
       // if (!confirmed) {
