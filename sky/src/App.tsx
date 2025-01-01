@@ -11,7 +11,9 @@ import { appDataDir } from '@tauri-apps/api/path';
 import MyPostlist from "./components/Data/MyPostlist";
 // import { invoke } from "@tauri-apps/api/core";
 
-// import { Window } from "@tauri-apps/api/window";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { confirm } from "@tauri-apps/plugin-dialog";
+
 
 const App: React.FC = () => {
       const [username, setUsername] = useState("");
@@ -53,41 +55,54 @@ const App: React.FC = () => {
           }
   }
   
-  // Window.listen('tauri://close-requested', async () => {
-  //   if (stronghold) {
-  //     try {
-  //       await stronghold.save();
-  //       console.log("save success")
-  //     } catch (error) {
-  //       console.error("save error:" + error);
-  //     }
-  //   }
-  //   Window.close();
-  // });
-
-      const getRegister = async (client: Client) => {
-          try {
-            const store = client.getStore();
-            
-            const encodedUsername = await store?.get("username");
-            const encodedPassword = await store?.get("app-password");
-
-            if (encodedUsername && encodedPassword) {
-              const decodedUsername = new TextDecoder().decode(new Uint8Array(encodedUsername));
-              const decodedPassword = new TextDecoder().decode(new Uint8Array(encodedPassword));
-              setUsername(decodedUsername);
-              setPassword(decodedPassword);
-              
-              setResult("既存のユーザーを読み込みました。");
-                
-            } else {
-              setResult("ユーザー登録をしてください。");
-            }
-              
-          }catch(error){
-              setResult("ユーザー読み込みエラー" + error);
-          }
+  const setupCloseListener = async () => {
+    const unlisten = await getCurrentWindow().onCloseRequested(async (event) => {
+      if (stronghold) {
+        try {
+          await stronghold.save();
+          console.log("save success")
+        } catch (error) {
+          console.error("save error:" + error);
+        }
       }
+
+      const confirmed = await confirm("終了しますか？");
+      if (!confirmed) {
+        event.preventDefault();
+        return;
+      }
+    });
+    
+    return () => {
+        unlisten();
+    };
+    
+  };
+  
+
+  const getRegister = async (client: Client) => {
+      try {
+        const store = client.getStore();
+        
+        const encodedUsername = await store?.get("username");
+        const encodedPassword = await store?.get("app-password");
+
+        if (encodedUsername && encodedPassword) {
+          const decodedUsername = new TextDecoder().decode(new Uint8Array(encodedUsername));
+          const decodedPassword = new TextDecoder().decode(new Uint8Array(encodedPassword));
+          setUsername(decodedUsername);
+          setPassword(decodedPassword);
+          
+          setResult("既存のユーザーを読み込みました。");
+            
+        } else {
+          setResult("ユーザー登録をしてください。");
+        }
+          
+      }catch(error){
+          setResult("ユーザー読み込みエラー" + error);
+      }
+  }
 
       
       // const { stronghold, client } = initStronghold();
@@ -95,8 +110,12 @@ const App: React.FC = () => {
       // const store = client.getStore();
 
   useEffect(() => {
-      initStronghold();
-    }, []);
+    const setup = async () => {
+      await setupCloseListener();
+      await initStronghold();
+    };
+    setup();
+  }, []);
       
 
     return (
