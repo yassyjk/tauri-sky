@@ -10,7 +10,7 @@ services:
     tty: true
     # command: /bin/sh -c "yarn install && apt install -y libwebkit2gtk-4.1-dev  && yarn tauri dev"
     # command: /bin/sh -c "yarn install  && yarn dev"
-    # command: /bin/sh -c "yarn install  && yarn tauri dev"
+    command: /bin/sh -c "yarn install  && yarn tauri dev"
     # command: /bin/sh -c "yarn install  && yarn tauri android init && yarn tauri android build"
     # command: /bin/sh -c "export PATH=/root/Android/SDK/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
 

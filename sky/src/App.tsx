@@ -12,7 +12,7 @@ import MyPostlist from "./components/Data/MyPostlist";
 // import { invoke } from "@tauri-apps/api/core";
 
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { confirm } from "@tauri-apps/plugin-dialog";
+// import { confirm } from "@tauri-apps/plugin-dialog";
 
 
 const App: React.FC = () => {
@@ -56,7 +56,7 @@ const App: React.FC = () => {
   }
   
   const setupCloseListener = async () => {
-    const unlisten = await getCurrentWindow().onCloseRequested(async (event) => {
+    const unlisten = await getCurrentWindow().onCloseRequested(async () => {
       if (stronghold) {
         try {
           await stronghold.save();
@@ -66,11 +66,11 @@ const App: React.FC = () => {
         }
       }
 
-      const confirmed = await confirm("終了しますか？");
-      if (!confirmed) {
-        event.preventDefault();
-        return;
-      }
+      // const confirmed = await confirm("終了しますか？");
+      // if (!confirmed) {
+      //   event.preventDefault();
+      //   return;
+      // }
     });
     
     return () => {
